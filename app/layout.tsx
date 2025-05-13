@@ -2,9 +2,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Children } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { AuthProvider, AuthProviderProps } from "react-oidc-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,12 +18,21 @@ const geistMono = Geist_Mono({
 
 const queryClient = new QueryClient();
 
+const oidcConfig = {
+  authority: "http://localhost:6969/realms/master",
+  client_id: "twider",
+  redirect_uri: "http://localhost:3000",
+  audience: "twider",
+};
+
 function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
-      {children}
-    </QueryClientProvider>
+    <AuthProvider {...oidcConfig}>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
+        {children}
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }
 
