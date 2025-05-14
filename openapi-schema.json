@@ -10,6 +10,7 @@
         "tags": [
           "Backend"
         ],
+        "operationId": "HealthCheckHello",
         "responses": {
           "200": {
             "description": "OK",
@@ -29,6 +30,7 @@
         "tags": [
           "Comments"
         ],
+        "operationId": "CreateCommentWithParent",
         "parameters": [
           {
             "name": "postId",
@@ -109,6 +111,7 @@
         "tags": [
           "Comments"
         ],
+        "operationId": "CreateComment",
         "parameters": [
           {
             "name": "postId",
@@ -178,6 +181,7 @@
         "tags": [
           "Comments"
         ],
+        "operationId": "GetCommentsByPostId",
         "parameters": [
           {
             "name": "postId",
@@ -234,6 +238,7 @@
         "tags": [
           "Comments"
         ],
+        "operationId": "GetCommentsByPostAndCommentId",
         "parameters": [
           {
             "name": "postId",
@@ -299,6 +304,7 @@
         "tags": [
           "Post reactions"
         ],
+        "operationId": "AddReactionToPost",
         "parameters": [
           {
             "name": "id",
@@ -357,6 +363,7 @@
         "tags": [
           "Post reactions"
         ],
+        "operationId": "RemoveReactionFromPost",
         "parameters": [
           {
             "name": "id",
@@ -397,6 +404,7 @@
         "tags": [
           "Posts"
         ],
+        "operationId": "GetPostById",
         "parameters": [
           {
             "name": "id",
@@ -435,6 +443,7 @@
         "tags": [
           "Posts"
         ],
+        "operationId": "DeletePost",
         "parameters": [
           {
             "name": "id",
@@ -466,6 +475,7 @@
         "tags": [
           "Posts"
         ],
+        "operationId": "UpdatePost",
         "parameters": [
           {
             "name": "id",
@@ -526,6 +536,7 @@
         "tags": [
           "Posts"
         ],
+        "operationId": "CreatePost",
         "requestBody": {
           "content": {
             "application/json": {
@@ -574,6 +585,7 @@
         "tags": [
           "Posts"
         ],
+        "operationId": "GetPosts",
         "parameters": [
           {
             "name": "cursor",

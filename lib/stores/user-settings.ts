@@ -14,7 +14,7 @@ type Actions = {
 export type UserSettingsStore = Data & Actions;
 
 export const useSettingsStore = create<UserSettingsStore>()((set, get) => ({
-  backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080",
+  backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5224",
   accessToken: undefined,
   actions: {
     setAccessToken: (token: string) => {
