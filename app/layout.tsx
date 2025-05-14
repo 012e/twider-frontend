@@ -5,6 +5,7 @@ import "./globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider, AuthProviderProps } from "react-oidc-context";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +19,10 @@ const geistMono = Geist_Mono({
 
 const queryClient = new QueryClient();
 
-const oidcConfig = {
+const oidcConfig: AuthProviderProps = {
   authority: "http://localhost:6969/realms/master",
   client_id: "twider",
   redirect_uri: "http://localhost:3000",
-  audience: "twider",
 };
 
 function Providers({ children }: { children: React.ReactNode }) {
@@ -43,11 +43,18 @@ export default function RootLayout({
 }>) {
   return (
     <Providers>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </Providers>

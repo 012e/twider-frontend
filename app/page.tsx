@@ -5,6 +5,8 @@ import { posts, ProblemDetails } from "@/lib/api"; // Import Post type
 import { AxiosError } from "axios";
 import PostCard from "./_components/post";
 import InfiniteScrollTrigger from "./_components/infinite-scroll-trigger";
+import PostForm from "./_components/post-form";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 function LoadingState() {
   return (
@@ -67,7 +69,11 @@ export default function HomePage() {
 
   return (
     <div className="p-4 mx-auto space-y-6 max-w-2xl">
-      <h1 className="text-3xl font-bold text-center">Latest Posts</h1>
+      <PostForm />
+      <ModeToggle />
+      <h1 className="text-3xl font-bold tracking-tight text-center">
+        Latest Posts
+      </h1>
 
       {allPosts.map(
         (post) => !!post && <PostCard key={post.postId} post={post} />,
