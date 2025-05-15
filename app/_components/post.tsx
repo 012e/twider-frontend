@@ -1,10 +1,8 @@
 import { GetPostByIdResponse as Post, posts, ProblemDetails } from "@/lib/api"; // Import Post type
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { useState } from "react";

@@ -69,7 +69,6 @@ export default function HomePage() {
 
   return (
     <div className="p-4 mx-auto space-y-6 max-w-2xl">
-      <NavBar />
       <main>
         <PostForm />
         <h1 className="text-3xl font-bold tracking-tight text-center m-5">
