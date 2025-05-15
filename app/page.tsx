@@ -6,7 +6,7 @@ import { AxiosError } from "axios";
 import PostCard from "./_components/post";
 import InfiniteScrollTrigger from "./_components/infinite-scroll-trigger";
 import PostForm from "./_components/post-form";
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import NavBar from "./_components/nav-bar";
 
 function LoadingState() {
   return (
@@ -69,26 +69,30 @@ export default function HomePage() {
 
   return (
     <div className="p-4 mx-auto space-y-6 max-w-2xl">
-      <PostForm />
-      <ModeToggle />
-      <h1 className="text-3xl font-bold tracking-tight text-center">
-        Latest Posts
-      </h1>
+      <NavBar />
+      <main>
+        <PostForm />
+        <h1 className="text-3xl font-bold tracking-tight text-center m-5">
+          Latest Posts
+        </h1>
 
-      {allPosts.map(
-        (post) => !!post && <PostCard key={post.postId} post={post} />,
-      )}
+        <div className="flex flex-col gap-5">
+          {allPosts.map(
+            (post) => !!post && <PostCard key={post.postId} post={post} />,
+          )}
+        </div>
 
-      {/* Render the infinite scroll trigger and loading/end state */}
-      {/* Only render if there are posts or potentially more posts to fetch */}
-      {(allPosts.length > 0 || hasNextPage) && (
-        <InfiniteScrollTrigger
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          fetchNextPage={fetchNextPage}
-          itemCount={allPosts.length} // Pass item count to decide "Nothing more to load"
-        />
-      )}
+        {/* Render the infinite scroll trigger and loading/end state */}
+        {/* Only render if there are posts or potentially more posts to fetch */}
+        {(allPosts.length > 0 || hasNextPage) && (
+          <InfiniteScrollTrigger
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            fetchNextPage={fetchNextPage}
+            itemCount={allPosts.length} // Pass item count to decide "Nothing more to load"
+          />
+        )}
+      </main>
     </div>
   );
 }

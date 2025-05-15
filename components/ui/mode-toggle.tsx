@@ -1,5 +1,6 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { Button } from "./button";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
@@ -10,19 +11,20 @@ export function ModeToggle() {
 
 
   return (
-    <div
-      className="flex flex-row gap-1 items-center w-full"
+    <Button
+      className="flex flex-row gap-1 items-center justify-center hover:cursor-pointer p-8"
       onClick={toggleTheme}
+      variant="ghost"
+      size="icon"
       aria-label={
         theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
       }
     >
       {theme === "dark" ? (
-        <Sun className="h-[1.2rem] w-[1.2rem]" />
+        <Sun className="size-7" />
       ) : (
-        <Moon className="h-[1.2rem] w-[1.2rem]" />
+        <Moon className="size-7" />
       )}
-      <span>Toggle theme</span>
-    </div>
+    </Button>
   );
 }
