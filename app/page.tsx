@@ -7,6 +7,7 @@ import PostCard from "./_components/post";
 import InfiniteScrollTrigger from "./_components/infinite-scroll-trigger";
 import PostForm from "./_components/post-form";
 import NavBar from "./_components/nav-bar";
+import { useAuth } from "react-oidc-context";
 
 function LoadingState() {
   return (

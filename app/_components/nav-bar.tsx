@@ -12,16 +12,15 @@ import {
   Instagram,
   Compass,
   Film,
-  LogOut,
+  LogIn,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useAuth } from "react-oidc-context";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { signIn } from "next-auth/react";
 
 export default function NavBar({ ref }: { ref: Ref<HTMLDivElement> }) {
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { removeUser } = useAuth();
 
   // Had to use !size-8 because https://github.com/shadcn-ui/ui/issues/6316
   const navItems = [
@@ -93,14 +92,13 @@ export default function NavBar({ ref }: { ref: Ref<HTMLDivElement> }) {
           </Button>
         ))}
         <Button
-          onClick={async () => {
-            await removeUser();
-            console.log("removed user");
+          onClick={() => {
+            signIn("keycloak");
           }}
           variant="ghost"
           size="icon"
         >
-          <LogOut />
+          <LogIn />
         </Button>
       </nav>
 
