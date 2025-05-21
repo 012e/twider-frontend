@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThumbsUp, MessageCircle, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ export type ReactionButtonProps = {
 
 export default function ReactionButton({
   className,
-  onReactionSelect,
+  onReactionSelect: onReactionSelectCallback,
 }: ReactionButtonProps) {
   const [showReactions, setShowReactions] = useState(false);
   const [selectedReaction, setSelectedReaction] = useState<Reaction | null>(
@@ -77,14 +77,18 @@ export default function ReactionButton({
     startHideTimeout();
   };
 
-  const handleReactionSelect = (reaction: Reaction) => {
+  const handleReactionSelect = useCallback((reaction: Reaction) => {
     setSelectedReaction(reaction);
     setShowReactions(false);
     clearHideTimeout(); // Ensure popup hides immediately on selection
     // Reset hover states as interaction is complete
     isMouseOverButton.current = false;
     isMouseOverPopup.current = false;
-  };
+
+    if (onReactionSelectCallback) {
+      onReactionSelectCallback(reaction);
+    }
+  }, [onReactionSelectCallback]);
 
   // Clear timeout on component unmount
   useEffect(() => {

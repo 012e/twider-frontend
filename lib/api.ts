@@ -94,6 +94,7 @@ export const GetPostByIdResponseSchema = z.object({
   reactions: ReactionDtoSchema,
   reactionCount: z.number().int(),
   commentCount: z.number().int(),
+  userReaction: z.string().nullable(),
 });
 export type GetPostByIdResponse = z.infer<typeof GetPostByIdResponseSchema>;
 

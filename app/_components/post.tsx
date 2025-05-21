@@ -1,12 +1,13 @@
-import { GetPostByIdResponse as Post, posts, ProblemDetails } from "@/lib/api"; // Import Post type
-import { CardContent, CardDescription, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
+import { GetPostByIdResponse as Post, postReactions } from "@/lib/api"; // Import Post type
+import { CardDescription, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageCircle, Share, User } from "lucide-react";
 import ReactionButton from "./reaction-button";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface PostCardProps {
   post: Post;
@@ -51,10 +52,23 @@ function PostHeader(post: Post) {
   );
 }
 
-function PostActions(post: Post) {
+type Reaction = {
+  id: string;
+  emoji: string;
+  label: string;
+};
+
+type PostActionProps = {
+  onReactionSelect?: (reaction: Reaction) => void;
+};
+
+function PostActions({ onReactionSelect }: PostActionProps) {
   return (
     <div className="grid grid-cols-3 m-1 text-gray-600">
-      <ReactionButton className="flex justify-center items-center w-full h-full" />
+      <ReactionButton
+        className="flex justify-center items-center w-full h-full"
+        onReactionSelect={onReactionSelect}
+      />
       <Button
         variant="ghost"
         className="flex justify-center items-center w-full h-full"
@@ -75,7 +89,7 @@ function PostActions(post: Post) {
 
 function PostContent(post: Post) {
   return (
-    <div className="mx-3 my-1">
+    <div className="my-1 mx-3">
       <div className="flex gap-3 items-center"></div>
       <div className="mx-2">
         <p>{post.content}</p>
@@ -102,6 +116,25 @@ function PostInfo(post: Post) {
 }
 
 export default function PostCard({ post }: PostCardProps) {
+  const { mutateAsync } = useMutation({
+    mutationFn: async ({
+      postId,
+      reactionType,
+    }: {
+      postId: string;
+      reactionType: string;
+    }) => {
+      return await postReactions.addReactionToPost(postId, {
+        reactionType: reactionType,
+      });
+    },
+
+    onSuccess: () => {},
+
+    onError: () => {
+      toast.error("Error adding reaction");
+    },
+  });
   return (
     <div
       key={post.postId}
@@ -111,7 +144,14 @@ export default function PostCard({ post }: PostCardProps) {
       <PostContent {...post} />
       <PostInfo {...post} />
       <Separator />
-      <PostActions {...post} />
+      <PostActions
+        onReactionSelect={async (reaction) => {
+          await mutateAsync({
+            postId: post.postId,
+            reactionType: reaction.id,
+          });
+        }}
+      />
     </div>
   );
 }

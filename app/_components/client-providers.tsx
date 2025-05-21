@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import NavBar from "../_components/nav-bar";
 import { useDimensions } from "@/components/hooks/use-dimension";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ export default function ClientProviders({
           </div>
         </QueryClientProvider>
       </SessionProvider>
+      <Toaster />
     </ThemeProvider>
   );
 }
