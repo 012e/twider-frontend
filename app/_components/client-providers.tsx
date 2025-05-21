@@ -19,23 +19,23 @@ export default function ClientProviders({
   const { width: navWidth } = useDimensions(navRef);
 
   return (
-    <SessionProvider>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="flex h-screen w-screen">
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <SessionProvider>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
+          <div className="flex w-screen h-screen">
             <NavBar ref={navRef} />
             <main style={{ marginLeft: navWidth }} className="w-full h-full">
               {children}
             </main>
           </div>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </SessionProvider>
+        </QueryClientProvider>
+      </SessionProvider>
+    </ThemeProvider>
   );
 }

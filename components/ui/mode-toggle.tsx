@@ -9,21 +9,17 @@ export function ModeToggle() {
     setTheme(newTheme);
   }
 
-
   return (
     <Button
-      className="flex flex-row gap-1 items-center justify-center hover:cursor-pointer p-8"
+      className="flex flex-row gap-1 justify-center items-center p-8 hover:cursor-pointer"
       onClick={toggleTheme}
       variant="ghost"
       size="icon"
-      aria-label={
-        theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-      }
     >
       {theme === "dark" ? (
-        <Sun className="size-7" />
+        <Sun className="size-7" suppressHydrationWarning/>
       ) : (
-        <Moon className="size-7" />
+        <Moon className="size-7" suppressHydrationWarning/>
       )}
     </Button>
   );
