@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { PostProvider, usePostContext } from "../_stores/post/post-provider";
 
 interface PostCardProps {
   post: Post;
@@ -22,13 +23,16 @@ function formatTime(date: Date): string {
   return `${day} ${month} at ${hours}:${minutes}`;
 }
 
-function PostHeader(post: Post) {
+function PostHeader() {
+  const user = usePostContext((state) => state.user);
+  const createdAt = usePostContext((state) => state.createdAt);
+
   return (
     <div className="flex gap-3 items-center m-3">
-      <Link href={`/user/${post.user.userId}`}>
+      <Link href={`/user/${user.userId}`}>
         <Avatar className="w-12 h-12">
           <AvatarImage
-            src={post.user.profilePicture as string | undefined}
+            src={user.profilePicture as string | undefined}
             alt="User"
           />
           <AvatarFallback>
@@ -39,13 +43,13 @@ function PostHeader(post: Post) {
 
       <Link
         className="flex flex-col justify-center"
-        href={`/user/${post.user.userId}`}
+        href={`/user/${user.userId}`}
       >
         <CardTitle className="hover:underline">
-          <p>{post.user.username}</p>
+          <p>{user.username}</p>
         </CardTitle>
         <CardDescription className="hover:underline">
-          {formatTime(new Date(post.createdAt))}
+          {formatTime(new Date(createdAt))}
         </CardDescription>
       </Link>
     </div>
@@ -135,23 +139,23 @@ export default function PostCard({ post }: PostCardProps) {
       toast.error("Error adding reaction");
     },
   });
+
   return (
-    <div
-      key={post.postId}
-      className="flex flex-col rounded-2xl border shadow-sm bg-card text-card-foreground"
-    >
-      <PostHeader {...post} />
-      <PostContent {...post} />
-      <PostInfo {...post} />
-      <Separator />
-      <PostActions
-        onReactionSelect={async (reaction) => {
-          await mutateAsync({
-            postId: post.postId,
-            reactionType: reaction.id,
-          });
-        }}
-      />
-    </div>
+    <PostProvider post={post} key={post.postId}>
+      <div className="flex flex-col rounded-2xl border shadow-sm bg-card text-card-foreground">
+        <PostHeader />
+        <PostContent {...post} />
+        <PostInfo {...post} />
+        <Separator />
+        <PostActions
+          onReactionSelect={async (reaction) => {
+            await mutateAsync({
+              postId: post.postId,
+              reactionType: reaction.id,
+            });
+          }}
+        />
+      </div>
+    </PostProvider>
   );
 }
