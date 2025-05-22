@@ -1,11 +1,11 @@
-import { GetPostByIdResponse } from "@/lib/api";
+import { Post } from "@/lib/api";
 import { useContext, useRef } from "react";
 import { createPostStore, PostActions, PostState, PostStore } from "./post-store";
 import { PostContext } from "./post-context";
 import { useStore } from "zustand";
 
 type PostProviderProps = React.PropsWithChildren<{
-  post: GetPostByIdResponse;
+  post: Post;
 }>;
 
 export function PostProvider({ children, post }: PostProviderProps) {

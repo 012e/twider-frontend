@@ -23,11 +23,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { queryClient } from "./client-providers";
+import { CreatePost, posts } from "@/lib/api";
 
 interface ImagePreview {
   url: string;
   file: File;
 }
+
+const MAX_CHARS = 1000;
+const MAX_IMAGES = 4;
 
 export default function PostForm() {
   const [text, setText] = useState("");
@@ -35,8 +42,26 @@ export default function PostForm() {
   const [isOpen, setIsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<AutosizeTextAreaRef>(null);
-  const MAX_CHARS = 280;
-  const MAX_IMAGES = 4;
+
+  const { mutateAsync } = useMutation({
+    mutationFn: async ({ text }: { text: string }) => {
+      const request: CreatePost = {
+        content: text,
+      };
+      return await posts.create(request);
+    },
+
+    onSuccess: () => {
+      toast.success("Post created successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["posts"],
+      });
+    },
+
+    onError: () => {
+      toast.error("Failed to submit post");
+    },
+  });
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
@@ -69,10 +94,10 @@ export default function PostForm() {
     setImages(newImages);
   };
 
-  const handleSubmit = () => {
-    // Here you would typically send the post to an API
-    console.log("Posting:", { text, images: images.map((img) => img.file) });
-    alert("Post submitted!");
+  const handleSubmit = async () => {
+    await mutateAsync({
+      text: text,
+    });
     setText("");
     setImages([]);
   };

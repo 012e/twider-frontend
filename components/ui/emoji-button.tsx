@@ -4,21 +4,17 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import {
-  EmojiPicker,
-  EmojiPickerSearch,
-  EmojiPickerContent,
-  EmojiPickerFooter,
+    EmojiPicker,
+    EmojiPickerContent,
+    EmojiPickerFooter,
+    EmojiPickerSearch,
 } from "@/components/ui/emoji-picker";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 
-type EmojiPickerButtonProps = EmojiPickerButtonProps & React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  })
 export default function EmojiPickerButton() {
   const [isOpen, setIsOpen] = React.useState(false);
 

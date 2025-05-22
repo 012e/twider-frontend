@@ -1,4 +1,4 @@
-import { GetPostByIdResponse as Post, postReactions } from "@/lib/api"; // Import Post type
+import { Post, postReactions } from "@/lib/api";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PostProvider, usePostContext } from "../_stores/post/post-provider";
-import { Reaction as ReactionType } from "@/lib/api";
+import { ReactionType } from "@/lib/api";
 
 interface PostCardProps {
   post: Post;
@@ -58,11 +58,12 @@ function PostHeader() {
 }
 
 function PostActions() {
-  const { updateUserReaction } = usePostContext((state) => state.actions);
+  const { updateUserReaction, removeUserReaction, toggleUserReaction } =
+    usePostContext((state) => state.actions);
   const postId = usePostContext((state) => state.postId);
   const selectedReaction = usePostContext((state) => state.userReaction);
 
-  const { mutateAsync } = useMutation({
+  const { mutateAsync: reactToPost } = useMutation({
     mutationFn: async ({
       postId,
       reactionType,
@@ -70,18 +71,32 @@ function PostActions() {
       postId: string;
       reactionType: ReactionType;
     }) => {
-      return await postReactions.reactionToPost(postId, {
+      updateUserReaction(reactionType);
+
+      return await postReactions.add(postId, {
         reactionType: reactionType,
       });
     },
 
-    onSuccess: (_, { reactionType }) => {
-      updateUserReaction(reactionType);
+    onError: () => {
+      removeUserReaction();
+      toast.error("Error adding reaction");
+    },
+  });
+
+  const { mutateAsync: toggleReaction } = useMutation({
+    mutationFn: async ({ postId }: { postId: string }) => {
+      toggleUserReaction("like");
+      if (!selectedReaction) {
+        return await postReactions.add(postId, {
+          reactionType: "like",
+        });
+      }
+      return await postReactions.remove(postId);
     },
 
     onError: () => {
-      updateUserReaction(null);
-      toast.error("Error adding reaction");
+      toast.error("Error remove reaction");
     },
   });
 
@@ -90,8 +105,13 @@ function PostActions() {
       <ReactionButton
         className="flex justify-center items-center w-full h-full"
         selectedReaction={selectedReaction}
+        onClick={async () => {
+          await toggleReaction({
+            postId,
+          });
+        }}
         onReactionSelect={(reaction) =>
-          mutateAsync({
+          reactToPost({
             postId,
             reactionType: reaction,
           })
@@ -126,17 +146,19 @@ function PostContent(post: Post) {
   );
 }
 
-function PostInfo(post: Post) {
+function PostInfo() {
+  const reactionCount = usePostContext((state) => state.reactionCount);
+  const commentCount = usePostContext((state) => state.commentCount);
   return (
     <div className="flex justify-between p-1 mx-4">
       <div>
         <span className="text-xs text-gray-400">
-          {post.reactionCount ?? 0} reactions
+          {reactionCount ?? 0} reactions
         </span>
       </div>
       <div>
         <span className="text-xs text-gray-400">
-          {post.commentCount ?? 0} comments
+          {commentCount ?? 0} comments
         </span>
       </div>
     </div>
@@ -149,16 +171,9 @@ export default function PostCard({ post }: PostCardProps) {
       <div className="flex flex-col rounded-2xl border shadow-sm bg-card text-card-foreground">
         <PostHeader />
         <PostContent {...post} />
-        <PostInfo {...post} />
+        <PostInfo />
         <Separator />
-        <PostActions
-          onReactionSelect={async (reaction) => {
-            await mutateAsync({
-              postId: post.postId,
-              reactionType: reaction,
-            });
-          }}
-        />
+        <PostActions />
       </div>
     </PostProvider>
   );

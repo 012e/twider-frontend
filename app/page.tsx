@@ -6,11 +6,12 @@ import { AxiosError } from "axios";
 import PostCard from "./_components/post";
 import InfiniteScrollTrigger from "./_components/infinite-scroll-trigger";
 import PostForm from "./_components/post-form";
+import { Loader } from "lucide-react";
 
 function LoadingState() {
   return (
-    <div className="flex justify-center items-center h-screen text-xl">
-      Loading posts...
+    <div className="flex justify-center items-center h-screen text-xl animate-spin">
+      <Loader />
     </div>
   );
 }
@@ -46,7 +47,7 @@ export default function HomePage() {
   } = useInfiniteQuery({
     queryKey: ["posts"],
     queryFn: ({ pageParam }: { pageParam: any }) => {
-      return posts.getPosts({ cursor: pageParam });
+      return posts.getList({ cursor: pageParam });
     },
     initialPageParam: undefined,
     getNextPageParam: (lastPage, _allPages): string | null => {

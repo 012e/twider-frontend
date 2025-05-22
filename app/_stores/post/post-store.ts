@@ -1,26 +1,24 @@
-import {
-  PostDtoUserDto,
-  Reaction,
-  ReactionDto,
-} from "@/lib/api";
+import * as api from "@/lib/api";
 import { immer } from "zustand/middleware/immer";
 import { createStore } from "zustand";
 
 export type PostState = {
   postId: string;
   content: string | null;
-  user: PostDtoUserDto;
+  user: api.User;
   createdAt: string;
   updatedAt: string | null;
-  reactions: ReactionDto;
+  reactions: api.ReactionStats;
   reactionCount: number;
   commentCount: number;
-  userReaction: Reaction | null;
+  userReaction: api.ReactionType | null;
 };
 
 export type PostActions = {
   actions: {
-    updateUserReaction: (reaction: Reaction | null) => void;
+    updateUserReaction: (reaction: api.ReactionType) => void;
+    removeUserReaction: () => void;
+    toggleUserReaction: (reaction: api.ReactionType) => void;
   };
 };
 
@@ -32,9 +30,32 @@ export const createPostStore = (initProps: PostState) => {
     immer((set) => ({
       ...initProps,
       actions: {
-        updateUserReaction: (reaction: Reaction | null) => {
+        removeUserReaction: () => {
+          set((state) => {
+            if (!state.userReaction) {
+              return;
+            }
+            state.reactionCount = (state.reactionCount ?? 0) - 1;
+            state.userReaction = null;
+          });
+        },
+        toggleUserReaction: (reaction: api.ReactionType = "like") => {
+          set((state) => {
+            if (state.userReaction) {
+              state.reactionCount = (state.reactionCount ?? 0) - 1;
+              state.userReaction = null;
+            } else {
+              state.reactionCount = (state.reactionCount ?? 0) + 1;
+              state.userReaction = reaction;
+            }
+          });
+        },
+        updateUserReaction: (reaction: api.ReactionType = "like") => {
           set((state) => {
             if (!reaction) {
+              if (!state.userReaction) {
+                return;
+              }
               state.reactionCount = (state.reactionCount ?? 0) - 1;
               state.userReaction = null;
               return;

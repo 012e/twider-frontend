@@ -9,7 +9,7 @@ import { useDimensions } from "@/components/hooks/use-dimension";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 export default function ClientProviders({
   children,
@@ -31,7 +31,7 @@ export default function ClientProviders({
           <ReactQueryDevtools initialIsOpen={false} />
           <div className="flex w-screen h-screen">
             <NavBar ref={navRef} />
-            <main style={{ marginLeft: navWidth }} className="w-full h-full">
+            <main style={{ marginLeft: navWidth || 96.75 }} className="w-full h-full">
               {children}
             </main>
           </div>

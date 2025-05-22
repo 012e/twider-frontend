@@ -1,12 +1,20 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "./button";
+import useIsClient from "@/components/hooks/is-client";
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme();
+  const isClient = useIsClient();
+
   function toggleTheme() {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
+  }
+
+  // avoid hydration mismatch
+  if (!isClient) {
+    return null;
   }
 
   return (

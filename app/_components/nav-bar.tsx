@@ -91,15 +91,6 @@ export default function NavBar({ ref }: { ref: Ref<HTMLDivElement> }) {
             </Link>
           </Button>
         ))}
-        <Button
-          onClick={() => {
-            signIn("keycloak");
-          }}
-          variant="ghost"
-          size="icon"
-        >
-          <LogIn />
-        </Button>
       </nav>
 
       <div className="px-2 mt-auto mb-6">
