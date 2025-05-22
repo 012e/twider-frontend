@@ -24,7 +24,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token: rawToken, account }) {
       const token = rawToken as KeycloakJwt;
-
       if (account) {
         // First-time login, save the `access_token`, its expiry and the `refresh_token`
         return {
@@ -60,7 +59,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             expires_in: number;
             refresh_token?: string;
           };
-          console.log("New tokens", JSON.stringify(newTokens));
 
           return {
             ...token,
@@ -74,7 +72,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         } catch (error) {
           // If we fail to refresh the token, return an error so we can handle it on the page
           rawToken.error = "RefreshTokenError";
-          return token;
+          console.error("Error refreshing token", error);
+          return null;
         }
       }
     },

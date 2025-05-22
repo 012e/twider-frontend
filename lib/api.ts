@@ -4,13 +4,12 @@ Generated with gemini 2.5 Flash
 Prompt: Generate me axios client for this api. Make it simple, I just need to use it with tanstack query. Use zod for validation.
 */
 
-import  { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { z } from 'zod';
-import axiosInstance from './app-axios';
+import { AxiosInstance, AxiosRequestConfig } from "axios";
+import { z } from "zod";
+import axiosInstance from "./app-axios";
 
 // --- Zod Schema Definitions based on OpenAPI Schemas ---
 type UUID = string; // UUID is typically a string in APIs
-
 
 // Basic types and formats
 const uuidSchema = z.string().uuid();
@@ -48,6 +47,7 @@ export const CommentDtoSchema = z.object({
   parentCommentId: uuidSchema.nullable(),
   totalReplies: z.number().int(),
 });
+
 export type CommentDto = z.infer<typeof CommentDtoSchema>;
 
 export const CreatePostCommandSchema = z.object({
@@ -69,6 +69,7 @@ export const ReactionDtoSchema = z.object({
   angry: z.number().int(),
   care: z.number().int(),
 });
+
 export type ReactionDto = z.infer<typeof ReactionDtoSchema>;
 
 export const PostDtoUserDtoSchema = z.object({
@@ -85,6 +86,18 @@ export const PostDtoUserDtoSchema = z.object({
 });
 export type PostDtoUserDto = z.infer<typeof PostDtoUserDtoSchema>;
 
+export const ReactionSchema = z
+  .enum(["like", "love", "haha", "wow", "sad", "angry"])
+  .nullable();
+
+export const ReactionTypeRequestSchema = z.object({
+  reactionType: ReactionSchema,
+});
+
+export type ReactionTypeRequest = z.infer<typeof ReactionTypeRequestSchema>;
+
+export type Reaction = z.infer<typeof ReactionSchema>;
+
 export const GetPostByIdResponseSchema = z.object({
   postId: uuidSchema,
   content: z.string().nullable(),
@@ -94,14 +107,10 @@ export const GetPostByIdResponseSchema = z.object({
   reactions: ReactionDtoSchema,
   reactionCount: z.number().int(),
   commentCount: z.number().int(),
-  userReaction: z.string().nullable(),
+  userReaction: ReactionSchema,
 });
-export type GetPostByIdResponse = z.infer<typeof GetPostByIdResponseSchema>;
 
-export const ReactionTypeDtoSchema = z.object({
-  reactionType: z.string().nullable(), // Assuming reactionType is a string enum, validation could be added here if known
-});
-export type ReactionTypeDto = z.infer<typeof ReactionTypeDtoSchema>;
+export type GetPostByIdResponse = z.infer<typeof GetPostByIdResponseSchema>;
 
 export const GetUserByIdResponseSchema = z.object({
   id: z.number().int().nonnegative().max(2147483647),
@@ -112,23 +121,29 @@ export type GetUserByIdResponse = z.infer<typeof GetUserByIdResponseSchema>;
 type Unit = void; // No Zod schema needed for void
 
 // Microsoft.AspNetCore.Mvc.ProblemDetails for error responses
-export const ProblemDetailsSchema = z.object({
-  type: z.string().nullable().optional(),
-  title: z.string().nullable().optional(),
-  status: z.number().int().nullable().optional(),
-  detail: z.string().nullable().optional(),
-  instance: z.string().nullable().optional(),
-}).catchall(z.any()); // Allows for other properties not explicitly listed
+export const ProblemDetailsSchema = z
+  .object({
+    type: z.string().nullable().optional(),
+    title: z.string().nullable().optional(),
+    status: z.number().int().nullable().optional(),
+    detail: z.string().nullable().optional(),
+    instance: z.string().nullable().optional(),
+  })
+  .catchall(z.any()); // Allows for other properties not explicitly listed
 export type ProblemDetails = z.infer<typeof ProblemDetailsSchema>;
 
 // Generic Infinite Cursor Page schema
-export const InfiniteCursorPageSchema = <T extends z.ZodSchema<any>>(itemSchema: T) =>
+export const InfiniteCursorPageSchema = <T extends z.ZodSchema<any>>(
+  itemSchema: T,
+) =>
   z.object({
     items: z.array(itemSchema).nullable(),
     nextCursor: z.string().nullable(),
     hasMore: z.boolean(),
   });
-export type InfiniteCursorPage<T> = z.infer<ReturnType<typeof InfiniteCursorPageSchema<z.ZodSchema<T>>>>;
+export type InfiniteCursorPage<T> = z.infer<
+  ReturnType<typeof InfiniteCursorPageSchema<z.ZodSchema<T>>>
+>;
 
 export const health = {
   /**
@@ -137,7 +152,7 @@ export const health = {
    * Description: OK
    */
   helloGet: async (config?: AxiosRequestConfig): Promise<string> => {
-    const response = await axiosInstance.get<string>('/health/hello', config);
+    const response = await axiosInstance.get<string>("/health/hello", config);
     // No Zod schema for plain text string, just return data
     return response.data;
   },
@@ -154,7 +169,7 @@ export const comments = {
     postId: UUID,
     parentCommentId: UUID,
     body: CommentContent,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<ItemId> => {
     // Validate request body before sending
     const validatedBody = CommentContentSchema.parse(body);
@@ -162,7 +177,7 @@ export const comments = {
     const response = await axiosInstance.post<ItemId>(
       `/posts/${postId}/comments/${parentCommentId}`,
       validatedBody,
-      config
+      config,
     );
     // Validate response data
     return ItemIdSchema.parse(response.data);
@@ -177,7 +192,7 @@ export const comments = {
   createComment: async (
     postId: UUID,
     body: CommentContent,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<ItemId> => {
     // Validate request body before sending
     const validatedBody = CommentContentSchema.parse(body);
@@ -185,7 +200,7 @@ export const comments = {
     const response = await axiosInstance.post<ItemId>(
       `/posts/${postId}/comments`,
       validatedBody,
-      config
+      config,
     );
     // Validate response data
     return ItemIdSchema.parse(response.data);
@@ -201,7 +216,7 @@ export const comments = {
   getCommentsByPostId: async (
     postId: UUID,
     params?: { cursor?: string; pageSize?: number },
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<InfiniteCursorPage<CommentDto>> => {
     // No request body to validate
 
@@ -210,7 +225,7 @@ export const comments = {
 
     const response = await axiosInstance.get<InfiniteCursorPage<CommentDto>>(
       `/posts/${postId}/comments`,
-      { params, ...config }
+      { params, ...config },
     );
     // Validate response data
     return PaginatedCommentsSchema.parse(response.data);
@@ -227,16 +242,17 @@ export const comments = {
     postId: UUID,
     commentId: UUID,
     params?: { cursor?: string; pageSize?: number },
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<InfiniteCursorPage<CommentDto>> => {
     // No request body to validate
 
     // Define the expected response schema for this specific endpoint
-    const PaginatedCommentRepliesSchema = InfiniteCursorPageSchema(CommentDtoSchema);
+    const PaginatedCommentRepliesSchema =
+      InfiniteCursorPageSchema(CommentDtoSchema);
 
     const response = await axiosInstance.get<InfiniteCursorPage<CommentDto>>(
       `/posts/${postId}/comments/${commentId}`,
-      { params, ...config }
+      { params, ...config },
     );
     // Validate response data
     return PaginatedCommentRepliesSchema.parse(response.data);
@@ -249,18 +265,17 @@ export const postReactions = {
    * OperationId: AddReactionToPost
    * Description: No Content (204) - Returns MediatR.Unit
    */
-  addReactionToPost: async (
+  reactionToPost: async (
     id: UUID,
-    body: ReactionTypeDto,
-    config?: AxiosRequestConfig
+    body: ReactionTypeRequest,
+    config?: AxiosRequestConfig,
   ): Promise<Unit> => {
-    // Validate request body before sending
-    const validatedBody = ReactionTypeDtoSchema.parse(body);
+    const validatedBody = ReactionTypeRequestSchema.parse(body);
 
     const response = await axiosInstance.post<Unit>(
       `/posts/${id}/react`,
       validatedBody,
-      config
+      config,
     );
     // No data to validate for 204
     return response.data; // Will be undefined/void
@@ -273,11 +288,11 @@ export const postReactions = {
    */
   removeReactionFromPost: async (
     id: UUID,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<Unit> => {
     const response = await axiosInstance.delete<Unit>(
       `/posts/${id}/react`,
-      config
+      config,
     );
     // No data to validate for 204
     return response.data; // Will be undefined/void
@@ -292,11 +307,11 @@ export const posts = {
    */
   getPostById: async (
     id: UUID,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<GetPostByIdResponse> => {
     const response = await axiosInstance.get<GetPostByIdResponse>(
       `/posts/${id}`,
-      config
+      config,
     );
     // Validate response data
     return GetPostByIdResponseSchema.parse(response.data);
@@ -308,10 +323,7 @@ export const posts = {
    * Description: No Content (204)
    */
   deletePost: async (id: UUID, config?: AxiosRequestConfig): Promise<Unit> => {
-    const response = await axiosInstance.delete<Unit>(
-      `/posts/${id}`,
-      config
-    );
+    const response = await axiosInstance.delete<Unit>(`/posts/${id}`, config);
     // No data to validate for 204
     return response.data; // Will be undefined/void
   },
@@ -324,7 +336,7 @@ export const posts = {
   updatePost: async (
     id: UUID,
     body: UpdatePostContent,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<Unit> => {
     // Validate request body before sending
     const validatedBody = UpdatePostContentSchema.parse(body);
@@ -332,7 +344,7 @@ export const posts = {
     const response = await axiosInstance.put<Unit>(
       `/posts/${id}`,
       validatedBody,
-      config
+      config,
     );
     // No data to validate for 204
     return response.data; // Will be undefined/void
@@ -346,15 +358,15 @@ export const posts = {
    */
   createPost: async (
     body: CreatePostCommand,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<ItemId> => {
     // Validate request body before sending
     const validatedBody = CreatePostCommandSchema.parse(body);
 
     const response = await axiosInstance.post<ItemId>(
-      '/posts',
+      "/posts",
       validatedBody,
-      config
+      config,
     );
     // Validate response data
     return ItemIdSchema.parse(response.data);
@@ -368,17 +380,18 @@ export const posts = {
    */
   getPosts: async (
     params?: { cursor?: string; pageSize?: number },
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<InfiniteCursorPage<GetPostByIdResponse>> => {
     // No request body to validate
 
     // Define the expected response schema for this specific endpoint
-    const PaginatedPostsSchema = InfiniteCursorPageSchema(GetPostByIdResponseSchema);
-
-    const response = await axiosInstance.get<InfiniteCursorPage<GetPostByIdResponse>>(
-      '/posts',
-      { params, ...config }
+    const PaginatedPostsSchema = InfiniteCursorPageSchema(
+      GetPostByIdResponseSchema,
     );
+
+    const response = await axiosInstance.get<
+      InfiniteCursorPage<GetPostByIdResponse>
+    >("/posts", { params, ...config });
     // Validate response data
     return PaginatedPostsSchema.parse(response.data);
   },
@@ -393,11 +406,11 @@ export const users = {
    */
   getUserById: async (
     id: number,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<GetUserByIdResponse> => {
     const response = await axiosInstance.get<GetUserByIdResponse>(
       `/users/${id}`,
-      config
+      config,
     );
     // Validate response data
     return GetUserByIdResponseSchema.parse(response.data);

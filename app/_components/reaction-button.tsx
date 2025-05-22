@@ -1,20 +1,21 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThumbsUp, MessageCircle, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Reaction as ReactionType } from "@/lib/api";
 
-type Reaction = {
+type ReactionTemplate = {
   id: string;
   emoji: string;
   label: string;
   color: string; // This will now typically refer to text/icon color or an explicit background if needed
 };
 
-const reactions: Reaction[] = [
+const reactions: ReactionTemplate[] = [
   { id: "like", emoji: "👍", label: "Like", color: "text-blue-600" }, // Using a more neutral blue, you might consider 'text-primary'
   { id: "love", emoji: "❤️", label: "Love", color: "text-red-600" }, // Using a more neutral red
   { id: "haha", emoji: "😂", label: "Haha", color: "text-yellow-600" }, // Using a more neutral yellow
@@ -25,20 +26,23 @@ const reactions: Reaction[] = [
 
 export type ReactionButtonProps = {
   className?: string;
-  onReactionSelect?: (reaction: Reaction) => void;
+  selectedReaction?: ReactionType;
+  onReactionSelect?: (reaction: ReactionType) => void;
 };
 
 export default function ReactionButton({
   className,
+  selectedReaction,
   onReactionSelect: onReactionSelectCallback,
 }: ReactionButtonProps) {
   const [showReactions, setShowReactions] = useState(false);
-  const [selectedReaction, setSelectedReaction] = useState<Reaction | null>(
-    null,
-  );
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMouseOverButton = useRef(false);
   const isMouseOverPopup = useRef(false);
+
+  const selectedReactionTemplate = useMemo(() => {
+    return reactions?.find((reaction) => reaction.id === selectedReaction);
+  }, [selectedReaction]);
 
   const clearHideTimeout = () => {
     if (timeoutRef.current) {
@@ -77,18 +81,20 @@ export default function ReactionButton({
     startHideTimeout();
   };
 
-  const handleReactionSelect = useCallback((reaction: Reaction) => {
-    setSelectedReaction(reaction);
-    setShowReactions(false);
-    clearHideTimeout(); // Ensure popup hides immediately on selection
-    // Reset hover states as interaction is complete
-    isMouseOverButton.current = false;
-    isMouseOverPopup.current = false;
+  const handleReactionSelect = useCallback(
+    (reaction: ReactionTemplate) => {
+      setShowReactions(false);
+      clearHideTimeout(); // Ensure popup hides immediately on selection
+      // Reset hover states as interaction is complete
+      isMouseOverButton.current = false;
+      isMouseOverPopup.current = false;
 
-    if (onReactionSelectCallback) {
-      onReactionSelectCallback(reaction);
-    }
-  }, [onReactionSelectCallback]);
+      if (onReactionSelectCallback) {
+        onReactionSelectCallback(reaction.id as ReactionType);
+      }
+    },
+    [onReactionSelectCallback],
+  );
 
   // Clear timeout on component unmount
   useEffect(() => {
@@ -109,10 +115,10 @@ export default function ReactionButton({
         onMouseEnter={handleMouseEnterButton}
         onMouseLeave={handleMouseLeaveButton}
       >
-        {selectedReaction ? (
+        {selectedReactionTemplate ? (
           <>
-            <span className="text-xl">{selectedReaction.emoji}</span>
-            <span>{selectedReaction.label}</span>
+            <span className="text-xl">{selectedReactionTemplate.emoji}</span>
+            <span>{selectedReactionTemplate.label}</span>
           </>
         ) : (
           <>
@@ -130,7 +136,7 @@ export default function ReactionButton({
             animate={{ opacity: 1, y: -50 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className="flex absolute left-0 -top-2 z-10 gap-1 p-2 rounded-full border shadow-lg bg-popover text-popover-foreground border-border" // Using Shadcn's popover for background, text, and border
+            className="flex absolute left-0 -top-2 z-10 gap-1 p-2 rounded-full border shadow-lg bg-popover text-popover-foreground border-border"
             onMouseEnter={handleMouseEnterPopup}
             onMouseLeave={handleMouseLeavePopup}
           >
@@ -146,7 +152,7 @@ export default function ReactionButton({
                 <motion.span
                   initial={{ opacity: 0, y: 5 }}
                   whileHover={{ opacity: 1, y: 0 }}
-                  className="absolute -top-8 py-1 px-2 text-xs whitespace-nowrap rounded border opacity-0 transition-opacity group-hover:opacity-100 bg-card text-card-foreground border-border" // Using Shadcn's card for background and text, and border
+                  className="absolute -top-8 py-1 px-2 text-xs whitespace-nowrap rounded border opacity-0 transition-opacity group-hover:opacity-100 bg-card text-card-foreground border-border"
                 >
                   {reaction.label}
                 </motion.span>
