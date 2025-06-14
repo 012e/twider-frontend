@@ -114,7 +114,7 @@ export const InfiniteCursorPageSchema = <T extends z.ZodSchema<any>>(
   itemSchema: T,
 ) =>
   z.object({
-    items: z.array(itemSchema).nullable(),
+    items: z.array(itemSchema).optional(),
     nextCursor: z.string().nullable(),
     hasMore: z.boolean(),
   });

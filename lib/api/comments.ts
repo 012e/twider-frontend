@@ -28,7 +28,7 @@ export const comments = {
     content: CommentContent,
     parentCommentId?: UUID,
     config?: AxiosRequestConfig,
-  ): Promise<ItemId> => {
+  ): Promise<Comment> => {
     // Validate request body
     const validatedBody = CommentContentSchema.parse(content);
     
@@ -37,9 +37,9 @@ export const comments = {
       ? `/posts/${postId}/comments/${parentCommentId}`
       : `/posts/${postId}/comments`;
     
-    const response = await axiosInstance.post<ItemId>(url, validatedBody, config);
+    const response = await axiosInstance.post<Comment>(url, validatedBody, config);
     
-    return ItemIdSchema.parse(response.data);
+    return CommentSchema.parse(response.data);
   },
 
   /**

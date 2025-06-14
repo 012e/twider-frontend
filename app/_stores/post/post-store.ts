@@ -2,6 +2,25 @@ import * as api from "@/lib/api";
 import { immer } from "zustand/middleware/immer";
 import { createStore } from "zustand";
 
+import { enableMapSet } from 'immer'
+enableMapSet()
+
+type BaseComment = {
+  replies?: Comment[];
+  totalReplies: number;
+  hasMoreReplies?: boolean;
+};
+
+export type Comment = {
+  commentId: string;
+  content: string | null;
+  user: api.User;
+  createdAt: string;
+  parentCommentId: string | null;
+} & BaseComment;
+
+export type CommentRoot = BaseComment;
+
 export type PostState = {
   postId: string;
   content: string | null;
@@ -12,6 +31,16 @@ export type PostState = {
   reactionCount: number;
   commentCount: number;
   userReaction: api.ReactionType | null;
+  commentRoot: CommentRoot;
+  commentCursors: Map<string, string>;
+};
+
+export type UpdateCommentArgs = {
+  comments?: Comment[];
+  parentCommentId?: string;
+  cursor?: string;
+  hasMoreReplies?: boolean;
+  isLoading: boolean;
 };
 
 export type PostActions = {
@@ -19,17 +48,81 @@ export type PostActions = {
     updateUserReaction: (reaction: api.ReactionType) => void;
     removeUserReaction: () => void;
     toggleUserReaction: (reaction: api.ReactionType) => void;
+    updateComments: (args: UpdateCommentArgs) => void;
   };
 };
 
-// export type PostStore = PostState & PostActions;
 export type PostStore = ReturnType<typeof createPostStore>;
 
 export const createPostStore = (initProps: PostState) => {
   return createStore<PostState & PostActions>()(
-    immer((set) => ({
+    immer((set, get) => ({
       ...initProps,
+      commentRoot: {
+        isLoading: true,
+        replies: undefined,
+        totalReplies: 0,
+        hasMoreReplies: false,
+      },
+      commentCursors: new Map<string, string>(),
       actions: {
+        updateComments: ({
+          comments,
+          parentCommentId,
+          cursor,
+          hasMoreReplies,
+          isLoading, // TODO: deprecate this
+        }: UpdateCommentArgs) => {
+          set((state) => {
+            if (!parentCommentId) {
+              // state.commentRoot.isLoading = isLoading;
+              if (comments) {
+                if (!state.commentRoot.replies) {
+                  state.commentRoot.replies = [];
+                }
+                state.commentRoot.replies.push(...comments);
+              }
+              state.commentRoot.hasMoreReplies = hasMoreReplies ?? false;
+              if (cursor) {
+                state.commentCursors.set("root", cursor);
+              }
+              return;
+            }
+
+            const queue: (Comment | CommentRoot)[] = [state.commentRoot];
+            let foundParent = false;
+
+            while (queue.length > 0) {
+              const current = queue.shift();
+
+              if (current && 'commentId' in current && current.commentId === parentCommentId) {
+                // current.isLoading = isLoading;
+                if (comments) {
+                  if (!current.replies) {
+                    current.replies = [];
+                  }
+                  current.replies.push(...comments);
+                }
+                current.hasMoreReplies = current.totalReplies > 0;
+                if (cursor) {
+                  state.commentCursors.set(parentCommentId, cursor);
+                }
+                foundParent = true;
+                break;
+              }
+
+              if (current && current.replies) {
+                for (const reply of current.replies) {
+                  queue.push(reply);
+                }
+              }
+            }
+
+            if (!foundParent) {
+              console.warn(`Parent comment with ID ${parentCommentId} not found.`);
+            }
+          });
+        },
         removeUserReaction: () => {
           set((state) => {
             if (!state.userReaction) {
@@ -71,3 +164,4 @@ export const createPostStore = (initProps: PostState) => {
     })),
   );
 };
+

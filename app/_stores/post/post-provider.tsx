@@ -11,7 +11,7 @@ type PostProviderProps = React.PropsWithChildren<{
 export function PostProvider({ children, post }: PostProviderProps) {
   const storeRef = useRef<PostStore>(null);
   if (!storeRef.current) {
-    storeRef.current = createPostStore(post);
+    storeRef.current = createPostStore({ ...post } as PostState);
   }
 
   return <PostContext value={storeRef.current}>{children}</PostContext>;
