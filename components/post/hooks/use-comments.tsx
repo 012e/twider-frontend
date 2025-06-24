@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { usePostContext } from "../_stores/post/post-provider";
+import { usePostContext } from "../stores/post-provider";
 import * as api from "@/lib/api";
 import { useCallback, useEffect } from "react";
-import { Comment } from "../_stores/post/post-store";
+import { Comment } from "../stores/post-store";
 
 export function useComments() {
   const postId = usePostContext((state) => state.postId);

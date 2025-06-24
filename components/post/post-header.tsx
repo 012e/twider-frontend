@@ -1,4 +1,4 @@
-import { usePostContext } from "../_stores/post/post-provider";
+import { usePostContext } from "./stores/post-provider";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardDescription, CardTitle } from "@/components/ui/card";

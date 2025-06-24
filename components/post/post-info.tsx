@@ -1,4 +1,4 @@
-import { usePostContext } from "../_stores/post/post-provider";
+import { usePostContext } from "./stores/post-provider";
 
 export function PostInfo() {
   const reactionCount = usePostContext((state) => state.reactionCount);

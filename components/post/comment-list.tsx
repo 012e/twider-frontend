@@ -1,7 +1,7 @@
 "use client";
 
 import { CommentComponent, CommentReplyForm } from "@/components/ui/comments";
-import { useComments } from "../_hooks/use-comments";
+import { useComments } from "@/components/post/hooks/use-comments";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";

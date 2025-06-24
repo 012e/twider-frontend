@@ -3,9 +3,9 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { posts, ProblemDetails } from "@/lib/api"; // Import Post type
 import { AxiosError } from "axios";
-import PostCard from "./_components/post";
-import InfiniteScrollTrigger from "./_components/infinite-scroll-trigger";
-import PostForm from "./_components/post-form";
+import PostCard from "../components/post/post";
+import InfiniteScrollTrigger from "../components/ui/infinite-scroll-trigger";
+import PostForm from "../components/post/post-form";
 import { Loader } from "lucide-react";
 
 function LoadingState() {

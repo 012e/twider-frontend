@@ -1,6 +1,6 @@
 import { Post } from "@/lib/api";
 import { Separator } from "@/components/ui/separator";
-import { PostProvider } from "../_stores/post/post-provider";
+import { PostProvider } from "./stores/post-provider";
 import { PostHeader } from "./post-header";
 import { PostContent } from "./post-content";
 import { PostInfo } from "./post-info";

@@ -1,4 +1,4 @@
-import { usePostContext } from "../_stores/post/post-provider";
+import { usePostContext } from "./stores/post-provider";
 import { postReactions } from "@/lib/api";
 import { ReactionType } from "@/lib/api";
 import { MessageCircle, Share } from "lucide-react";

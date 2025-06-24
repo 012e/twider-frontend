@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/popover";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { queryClient } from "./client-providers";
+import { queryClient } from "../../app/_components/client-providers";
 import { CreatePost, posts } from "@/lib/api";
 
 interface ImagePreview {

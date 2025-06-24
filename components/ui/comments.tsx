@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { MessageSquare, Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 
-import { Comment } from "@/app/_stores/post/post-store";
+import { Comment } from "@/components/post/stores/post-store";
 import DefaultFallbackAvatar from "./default-fallback-avatar";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
