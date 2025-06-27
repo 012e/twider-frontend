@@ -16,9 +16,9 @@ export default function ImageList({
 }: ImagePreviewProps) {
   const [openImagePreview, setOpenImagePreview] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
-  const images = usePostFormContext((state) => state.images);
+  const media = usePostFormContext((state) => state.images);
 
-  if (!images) {
+  if (!media) {
     return null;
   }
 
@@ -35,23 +35,24 @@ export default function ImageList({
   return (
     <div
       className={cn(
-        "grid gap-2 mt-3 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 max-w-2xl",
-        images.length === 1 && "grid-cols-1",
-        images.length === 2 && "grid-cols-2",
-        images.length === 3 && "grid-cols-2",
-        images.length === 4 && "grid-cols-2",
+        "grid gap-2 rounded-2xl overflow-hidden max-w-2xl",
+        media.length >= 0 && "mt-3",
+        media.length === 1 && "grid-cols-1",
+        media.length === 2 && "grid-cols-2",
+        media.length === 3 && "grid-cols-2",
+        media.length === 4 && "grid-cols-2",
       )}
     >
-      {images.map((img, index) => (
+      {media.map((img, index) => (
         <div
           key={index}
           className={cn(
             "relative group rounded-lg overflow-hidden",
-            images.length === 1 && "max-h-96",
-            images.length === 2 && "max-h-48",
-            images.length === 3 && index === 0 && "row-span-2 max-h-96",
-            images.length === 3 && index !== 0 && "max-h-48",
-            images.length === 4 && "max-h-36",
+            media.length === 1 && "max-h-96",
+            media.length === 2 && "max-h-48",
+            media.length === 3 && index === 0 && "row-span-2 max-h-96",
+            media.length === 3 && index !== 0 && "max-h-48",
+            media.length === 4 && "max-h-36",
           )}
         >
           <ImageUploadComponent
@@ -70,7 +71,7 @@ export default function ImageList({
       ))}
       <ImagePreviewPopup
         imageIndex={imageIndex}
-        imageUrl={images[imageIndex]?.previewUrl}
+        imageUrl={media[imageIndex]?.previewUrl}
         isOpen={openImagePreview}
         onClose={handleCloseImagePreview}
       />

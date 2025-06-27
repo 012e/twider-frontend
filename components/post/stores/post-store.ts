@@ -40,7 +40,7 @@ export type UpdateCommentArgs = {
   parentCommentId?: string;
   cursor?: string;
   hasMoreReplies?: boolean;
-  isLoading: boolean;
+  onTop?: boolean;
 };
 
 export type PostActions = {
@@ -49,6 +49,7 @@ export type PostActions = {
     removeUserReaction: () => void;
     toggleUserReaction: (reaction: api.ReactionType) => void;
     updateComments: (args: UpdateCommentArgs) => void;
+    increaseCommentCount: () => void;
   };
 };
 
@@ -70,6 +71,7 @@ export const createPostStore = (initProps: PostState) => {
           parentCommentId,
           cursor,
           hasMoreReplies,
+          onTop = false,
         }: UpdateCommentArgs) => {
           set((state) => {
             if (!parentCommentId) {
@@ -78,7 +80,12 @@ export const createPostStore = (initProps: PostState) => {
                 if (!state.commentRoot.replies) {
                   state.commentRoot.replies = [];
                 }
-                state.commentRoot.replies.push(...comments);
+                if (onTop) {
+                  // If onTop, we want to add the new comments at the top
+                  state.commentRoot.replies.unshift(...comments);
+                } else {
+                  state.commentRoot.replies.push(...comments);
+                }
               }
               state.commentRoot.hasMoreReplies = hasMoreReplies ?? false;
               if (cursor) {
@@ -103,7 +110,12 @@ export const createPostStore = (initProps: PostState) => {
                   if (!current.replies) {
                     current.replies = [];
                   }
-                  current.replies.push(...comments);
+                  if (onTop) {
+                    // If onTop, we want to add the new comments at the top
+                    current.replies.unshift(...comments);
+                  } else {
+                    current.replies.push(...comments);
+                  }
                 }
                 current.hasMoreReplies = current.totalReplies > 0;
                 if (cursor) {
@@ -145,6 +157,11 @@ export const createPostStore = (initProps: PostState) => {
               state.reactionCount = (state.reactionCount ?? 0) + 1;
               state.userReaction = reaction;
             }
+          });
+        },
+        increaseCommentCount: () => {
+          set((state) => {
+            state.commentCount = (state.commentCount ?? 0) + 1;
           });
         },
         updateUserReaction: (reaction: api.ReactionType = "like") => {

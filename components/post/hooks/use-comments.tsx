@@ -9,7 +9,7 @@ export function useComments() {
   const user = usePostContext((state) => state.user);
   const commentCursors = usePostContext((state) => state.commentCursors);
   const commentRoot = usePostContext((state) => state.commentRoot);
-  const { updateComments } = usePostContext((state) => state.actions);
+  const { updateComments, increaseCommentCount } = usePostContext((state) => state.actions);
 
   // TODO: fix duplicate query
   const { data, error, isLoading } = useQuery({
@@ -26,10 +26,6 @@ export function useComments() {
       return;
     }
     if (!data) {
-      updateComments({
-        cursor: undefined,
-        isLoading: true,
-      });
       return;
     }
     const loadedComments =
@@ -45,7 +41,6 @@ export function useComments() {
     updateComments({
       comments: loadedComments,
       cursor: data.nextCursor ?? undefined,
-      isLoading: false,
       hasMoreReplies: data.hasMore,
     });
   }, [data, updateComments, commentRoot.replies]);
@@ -61,7 +56,6 @@ export function useComments() {
       });
 
       updateComments({
-        isLoading: true,
         comments: result.items,
         parentCommentId: commentId,
         cursor: result.nextCursor ?? undefined,
@@ -82,10 +76,11 @@ export function useComments() {
         },
         parentId,
       );
+      increaseCommentCount();
 
       updateComments({
-        isLoading: true,
         parentCommentId: parentId,
+        onTop: true,
         comments: [newComment],
       });
     },

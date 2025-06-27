@@ -1,15 +1,13 @@
 "use client";
 
 import type React from "react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios, { type AxiosProgressEvent } from "axios";
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { usePostFormContext } from "./stores/post-form-provider";
 import * as api from "@/lib/api";
 import CircularProgress from "@/components/customized/progress/progress-07";
-import { Upload } from "lucide-react";
 import { MediaFile } from "./stores/post-form-store";
 
 type ImageUploadComponentProps = {
@@ -25,12 +23,9 @@ export default function ImageUploadComponent({
   medium,
   onImageUploadSuccess,
   className = "",
-  maxFileSize = 5,
-  acceptedFileTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"],
   ...props
 }: ImageUploadComponentProps) {
   const [uploadProgress, setUploadProgress] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { addImageUploadingProgress, addMediumId } = usePostFormContext(
     (state) => state.actions,
@@ -41,15 +36,17 @@ export default function ImageUploadComponent({
       if (!file) {
         throw new Error("No file selected for upload");
       }
-      const { url: uploadUrl, mediumId } = await api.media.generateUploadUrl();
+      const mimeType = file.type;
+      console.log("Uploading file with MIME type:", mimeType);
+
+      const { url: uploadUrl, mediumId } = await api.media.generateUploadUrl({
+        contentType: mimeType,
+      });
       addMediumId(file, mediumId);
 
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const responsePromise = axios.put(uploadUrl, formData, {
+      const responsePromise = axios.put(uploadUrl, file, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": mimeType,
         },
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (progressEvent.total) {
