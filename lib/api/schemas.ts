@@ -129,7 +129,7 @@ export type Unit = void;
 
 // --- Media Schemas ---
 export const MediaUploadResponseSchema = z.object({
-  url: z.string().nullable(),
+  url: z.string(),
   mediumId: uuidSchema,
 });
 export type MediaUploadResponse = z.infer<typeof MediaUploadResponseSchema>;

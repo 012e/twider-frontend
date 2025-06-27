@@ -26,31 +26,30 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryClient } from "../../app/_components/client-providers";
-import { CreatePost, posts } from "@/lib/api";
-import ImagesPreview from "./image-preview";
-
-interface ImageFile {
-  url: string;
-  file: File;
-}
+import ImageList from "./media-list";
+import { usePostFormContext } from "./stores/post-form-provider";
+import { MediaFile } from "./stores/post-form-store";
 
 const MAX_CHARS = 1000;
 const MAX_IMAGES = 4;
 
 export default function PostForm() {
-  const [text, setText] = useState("");
-  const [images, setImages] = useState<ImageFile[]>([]);
+  const content = usePostFormContext((state) => state.content);
+  const images = usePostFormContext((state) => state.images);
+  const {
+    setContent,
+    addImages,
+    reset: resetForm,
+    removeImage,
+    uploadPost,
+  } = usePostFormContext((state) => state.actions);
   const [isOpen, setIsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<AutosizeTextAreaRef>(null);
 
   const { mutateAsync } = useMutation({
-    mutationFn: async ({ text }: { text: string }) => {
-      const request: CreatePost = {
-        content: text,
-        mediaIds: []
-      };
-      return await posts.create(request);
+    mutationFn: async () => {
+      await uploadPost();
     },
 
     onSuccess: () => {
@@ -66,21 +65,21 @@ export default function PostForm() {
   });
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+    setContent(e.target.value);
   };
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newImages: ImageFile[] = [];
+      const newImages: MediaFile[] = [];
 
       Array.from(e.target.files).forEach((file) => {
         if (images.length + newImages.length < MAX_IMAGES) {
           const url = URL.createObjectURL(file);
-          newImages.push({ url, file });
+          newImages.push({ previewUrl: url, file });
         }
       });
 
-      setImages([...images, ...newImages]);
+      addImages(newImages);
     }
 
     // Reset the file input
@@ -89,24 +88,14 @@ export default function PostForm() {
     }
   };
 
-  const removeImage = (index: number) => {
-    const newImages = [...images];
-    URL.revokeObjectURL(newImages[index].url);
-    newImages.splice(index, 1);
-    setImages(newImages);
-  };
-
   const handleSubmit = async () => {
-    await mutateAsync({
-      text: text,
-    });
-    setText("");
-    setImages([]);
+    await mutateAsync();
+    resetForm();
   };
 
-  const charsRemaining = MAX_CHARS - text.length;
+  const charsRemaining = MAX_CHARS - content.length;
   const isOverLimit = charsRemaining < 0;
-  const canPost = (text.length > 0 && !isOverLimit) || images.length > 0;
+  const canPost = (content.length > 0 && !isOverLimit) || images.length > 0;
 
   return (
     <div className="p-4 rounded-xl border shadow-sm bg-card">
@@ -123,12 +112,12 @@ export default function PostForm() {
             ref={textareaRef}
             placeholder="What's happening?"
             className="p-0 text-2xl tracking-tight border-none ring-0 ring-transparent ring-offset-0 shadow-none resize-none focus:border-none focus:ring-0 focus:ring-transparent focus-visible:ring-0 focus-visible:ring-offset-0 bg-card"
-            value={text}
+            value={content}
             minHeight={0}
             onChange={handleTextChange}
           />
 
-          <ImagesPreview images={images} onRemoveImage={removeImage} />
+          <ImageList onRemoveImage={removeImage} />
 
           <div className="flex justify-between items-center pt-3 mt-4 border-t">
             <div className="flex items-center">
@@ -181,8 +170,8 @@ export default function PostForm() {
                       const end = textarea.selectionEnd;
 
                       const newText =
-                        text.slice(0, start) + emoji + text.slice(end);
-                      setText(newText);
+                        content.slice(0, start) + emoji + content.slice(end);
+                      setContent(newText);
 
                       // Move the cursor after the inserted emoji
                       requestAnimationFrame(() => {
@@ -198,7 +187,7 @@ export default function PostForm() {
                 </PopoverContent>
               </Popover>
 
-              {text.length > 0 && (
+              {content.length > 0 && (
                 <div
                   className={cn(
                     "ml-2 text-sm",

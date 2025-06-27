@@ -3,32 +3,24 @@
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import ImagePreviewPopup from "./full-image-preview";
+import ImagePreviewPopup from "./image-preview-popup";
 import ImageUploadComponent from "./image-upload-preview";
-import * as api from "@/lib/api";
-
-type ImagePreview = {
-  url: string;
-  file: File;
-}
+import { usePostFormContext } from "./stores/post-form-provider";
 
 type ImagePreviewProps = {
-  images: ImagePreview[];
   onRemoveImage: (index: number) => void;
-  getImageUploadUrl: () => Promise<string>;
-}
+};
 
-
-export default function ImagesPreview({
-  images,
+export default function ImageList({
   onRemoveImage: onRemoveImageCallback,
 }: ImagePreviewProps) {
-  if (images.length === 0) {
-    return null;
-  }
-
   const [openImagePreview, setOpenImagePreview] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
+  const images = usePostFormContext((state) => state.images);
+
+  if (!images) {
+    return null;
+  }
 
   function handleImageClick(index: number) {
     setOpenImagePreview(true);
@@ -63,9 +55,8 @@ export default function ImagesPreview({
           )}
         >
           <ImageUploadComponent
-            src={img.url || "/placeholder.svg"}
+            medium={img}
             onClick={() => handleImageClick(index)}
-            getImageUploadUrl={() => api.media.generateUploadUrl}
             className="object-cover w-full h-full hover:cursor-pointer"
           />
           <button
@@ -79,7 +70,7 @@ export default function ImagesPreview({
       ))}
       <ImagePreviewPopup
         imageIndex={imageIndex}
-        imageUrl={images[imageIndex]?.url}
+        imageUrl={images[imageIndex]?.previewUrl}
         isOpen={openImagePreview}
         onClose={handleCloseImagePreview}
       />

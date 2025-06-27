@@ -5,8 +5,9 @@ import { posts, ProblemDetails } from "@/lib/api";
 import { AxiosError } from "axios";
 import PostCard from "@/components/post/post";
 import InfiniteScrollTrigger from "@/components/ui/infinite-scroll-trigger";
-import PostForm from "@/components/post/post-form";
+import PostForm from "@/components/post-form/post-form";
 import { Loader } from "lucide-react";
+import { PostFormProvider } from "@/components/post-form/stores/post-form-provider";
 
 function LoadingState() {
   return (
@@ -33,6 +34,12 @@ function ErrorState({ error }: ErrorStateProps) {
       Error loading posts: {errorMessage}
     </div>
   );
+}
+
+function PostFormWrapper() {
+  return <PostFormProvider initialContent="">
+    <PostForm />
+  </PostFormProvider>
 }
 
 export default function HomePage() {
@@ -70,7 +77,7 @@ export default function HomePage() {
   return (
     <div className="p-4 mx-auto space-y-6 max-w-2xl">
       <main>
-        <PostForm />
+        <PostFormWrapper />
         <h1 className="text-3xl font-bold tracking-tight text-center m-5">
           Latest Posts
         </h1>
