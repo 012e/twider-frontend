@@ -5,7 +5,7 @@ import type React from "react";
 import { useState, useRef, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { X, ImageIcon, Globe, User, SmilePlus } from "lucide-react";
+import { ImageIcon, Globe, User, SmilePlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AutosizeTextarea,
@@ -27,8 +27,9 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryClient } from "../../app/_components/client-providers";
 import { CreatePost, posts } from "@/lib/api";
+import ImagePreview from "./image-preview";
 
-interface ImagePreview {
+interface ImageFile {
   url: string;
   file: File;
 }
@@ -38,7 +39,7 @@ const MAX_IMAGES = 4;
 
 export default function PostForm() {
   const [text, setText] = useState("");
-  const [images, setImages] = useState<ImagePreview[]>([]);
+  const [images, setImages] = useState<ImageFile[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<AutosizeTextAreaRef>(null);
@@ -69,7 +70,7 @@ export default function PostForm() {
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newImages: ImagePreview[] = [];
+      const newImages: ImageFile[] = [];
 
       Array.from(e.target.files).forEach((file) => {
         if (images.length + newImages.length < MAX_IMAGES) {
@@ -126,41 +127,7 @@ export default function PostForm() {
             onChange={handleTextChange}
           />
 
-          {images.length > 0 && (
-            <div
-              className={cn(
-                "grid gap-2 mt-3 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700",
-                images.length === 1 && "grid-cols-1",
-                images.length === 2 && "grid-cols-2",
-                images.length === 3 && "grid-cols-2",
-                images.length === 4 && "grid-cols-2",
-              )}
-            >
-              {images.map((img, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "relative group",
-                    images.length === 3 && index === 0 && "row-span-2",
-                    "aspect-square",
-                  )}
-                >
-                  <img
-                    src={img.url || "/placeholder.svg"}
-                    alt={`Uploaded image ${index + 1}`}
-                    className="object-cover w-full h-full"
-                  />
-                  <button
-                    onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 p-1 rounded-full opacity-0 transition-opacity group-hover:opacity-100 bg-black/50"
-                    aria-label="Remove image"
-                  >
-                    <X className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <ImagePreview images={images} onRemoveImage={removeImage} />
 
           <div className="flex justify-between items-center pt-3 mt-4 border-t">
             <div className="flex items-center">
