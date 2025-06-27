@@ -27,7 +27,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryClient } from "../../app/_components/client-providers";
 import { CreatePost, posts } from "@/lib/api";
-import ImagePreview from "./image-preview";
+import ImagesPreview from "./image-preview";
 
 interface ImageFile {
   url: string;
@@ -127,7 +127,7 @@ export default function PostForm() {
             onChange={handleTextChange}
           />
 
-          <ImagePreview images={images} onRemoveImage={removeImage} />
+          <ImagesPreview images={images} onRemoveImage={removeImage} />
 
           <div className="flex justify-between items-center pt-3 mt-4 border-t">
             <div className="flex items-center">

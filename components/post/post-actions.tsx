@@ -1,3 +1,4 @@
+import * as React from "react";
 import { usePostContext } from "./stores/post-provider";
 import { postReactions } from "@/lib/api";
 import { ReactionType } from "@/lib/api";
@@ -68,7 +69,8 @@ function usePostActionsLogic() {
 }
 
 export function PostReactionButton() {
-  const { postId, selectedReaction, reactToPost, toggleReaction } = usePostActionsLogic();
+  const { postId, selectedReaction, reactToPost, toggleReaction } =
+    usePostActionsLogic();
   return (
     <ReactionButton
       className="flex justify-center items-center w-full h-full"
@@ -88,36 +90,28 @@ export function PostReactionButton() {
   );
 }
 
-export function PostCommentDialog() {
+interface PostCommentDialogProps {
+  children: React.ReactNode;
+}
+
+export function PostCommentDialog({ children }: PostCommentDialogProps) {
   const postId = usePostContext((state) => state.postId);
   const comments = usePostContext((state) => state.commentRoot);
 
   return (
     <Dialog>
-      <form>
-        <DialogTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex justify-center items-center w-full h-full"
-          >
-            <MessageCircle />
-            Comment
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="overflow-y-scroll w-1/2 h-5/6 max-h-screen lg:max-w-screen-lg">
-          <DialogHeader>
-            <DialogTitle asChild>
-              <h1>Comments</h1>
-            </DialogTitle>
-            <DialogDescription asChild>
-              <p className="text-sm text-gray-500">
-                {comments.replies?.length ?? 0} comments
-              </p>
-            </DialogDescription>
-            <CommentList key={postId} />
-          </DialogHeader>
-        </DialogContent>
-      </form>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="flex flex-col overflow-y-scroll w-1/2 h-5/6 max-h-screen lg:max-w-screen-lg">
+        <DialogHeader>
+          <DialogTitle asChild>
+            <h1>Comments</h1>
+          </DialogTitle>
+          <DialogDescription asChild>
+            <p className="text-sm text-gray-500">{comments.replies?.length ?? 0} comments</p>
+          </DialogDescription>
+        </DialogHeader>
+        <CommentList key={postId} />
+      </DialogContent>
     </Dialog>
   );
 }
@@ -138,7 +132,15 @@ export function PostActions() {
   return (
     <div className="grid grid-cols-3 m-1 text-gray-600">
       <PostReactionButton />
-      <PostCommentDialog />
+      <PostCommentDialog>
+        <Button
+          variant="ghost"
+          className="flex justify-center items-center w-full h-full"
+        >
+          <MessageCircle />
+          Comment
+        </Button>
+      </PostCommentDialog>
       <PostShareButton />
     </div>
   );

@@ -1,3 +1,4 @@
+import { PostCommentDialog } from "./post-actions";
 import { usePostContext } from "./stores/post-provider";
 
 export function PostInfo() {
@@ -11,10 +12,13 @@ export function PostInfo() {
         </span>
       </div>
       <div>
-        <span className="text-xs text-gray-400">
-          {commentCount ?? 0} comments
-        </span>
+        <PostCommentDialog>
+          <span className="text-xs text-gray-400 hover:underline hover:cursor-pointer">
+            {commentCount ?? 0} comments
+          </span>
+        </PostCommentDialog>
       </div>
     </div>
   );
 }
+
