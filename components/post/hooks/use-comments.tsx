@@ -41,24 +41,20 @@ export function useComments() {
             hasMoreReplies: data.hasMore,
           }) as Comment,
       ) ?? [];
+
     updateComments({
       comments: loadedComments,
       cursor: data.nextCursor ?? undefined,
       isLoading: false,
+      hasMoreReplies: data.hasMore,
     });
   }, [data, updateComments, commentRoot.replies]);
 
-  useEffect(() => {
-    console.log("comments", commentRoot);
-  }, [commentRoot]);
-
   const loadMoreComments = useCallback(
-    async (commentId: string) => {
-      if (!commentId) {
-        throw new Error("Comment ID is required to load more comments.");
-      }
-      console.log("Loading more comments for commentId:", commentId);
-      const cursor = commentCursors.get(commentId) ?? undefined;
+    async (commentId: string | undefined) => {
+      console.log("Loading more comments for commentId:", commentId ?? "root");
+      const cursor = commentCursors.get(commentId ?? "root");
+      console.log("Cursor for commentId:", cursor);
 
       const result = await api.comments.getReplies(postId, commentId, {
         cursor: cursor,

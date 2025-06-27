@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { Loader2 } from "lucide-react";
 
 function EmptyComments() {
   return (
@@ -42,6 +44,16 @@ export function CommentList({ className = "" }: { className?: string }) {
     submitComment(newCommentContent);
   };
 
+  const { mutate: loadMoreReplies, isPending: isLoadingReplies } = useMutation({
+    mutationFn: () => {
+      return loadMoreComments(undefined);
+    },
+    onError: (error) => {
+      console.error("Failed to load more replies:", error);
+      toast.error("Failed to load more replies");
+    },
+  });
+
   return (
     <div className={cn("mx-auto w-full max-w-3xl", className)}>
       <div className="flex justify-between items-center mb-6"></div>
@@ -66,6 +78,27 @@ export function CommentList({ className = "" }: { className?: string }) {
               onReply={onReply}
             />
           ))
+        )}
+
+        {comments.hasMoreReplies && (
+          <Button
+            variant="link"
+            size="sm"
+            className="ml-6 text-xs text-muted-foreground"
+            onClick={() => loadMoreReplies()}
+            disabled={isLoadingReplies}
+          >
+            {isLoadingReplies ? (
+              <>
+                <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                  Load more replies
+              </>
+            )}
+          </Button>
         )}
       </div>
     </div>

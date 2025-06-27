@@ -97,6 +97,7 @@ interface PostCommentDialogProps {
 export function PostCommentDialog({ children }: PostCommentDialogProps) {
   const postId = usePostContext((state) => state.postId);
   const comments = usePostContext((state) => state.commentRoot);
+  const commentCount = usePostContext((state) => state.commentCount);
 
   return (
     <Dialog>
@@ -107,7 +108,7 @@ export function PostCommentDialog({ children }: PostCommentDialogProps) {
             <h1>Comments</h1>
           </DialogTitle>
           <DialogDescription asChild>
-            <p className="text-sm text-gray-500">{comments.replies?.length ?? 0} comments</p>
+            <p className="text-sm text-gray-500">{commentCount} comments</p>
           </DialogDescription>
         </DialogHeader>
         <CommentList key={postId} />

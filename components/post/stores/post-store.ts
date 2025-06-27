@@ -2,8 +2,8 @@ import * as api from "@/lib/api";
 import { immer } from "zustand/middleware/immer";
 import { createStore } from "zustand";
 
-import { enableMapSet } from 'immer'
-enableMapSet()
+import { enableMapSet } from "immer";
+enableMapSet();
 
 type BaseComment = {
   replies?: Comment[];
@@ -59,9 +59,8 @@ export const createPostStore = (initProps: PostState) => {
     immer((set, get) => ({
       ...initProps,
       commentRoot: {
+        ...initProps.commentRoot, // Ensure we merge any initial comment root properties
         isLoading: true,
-        replies: undefined,
-        totalReplies: 0,
         hasMoreReplies: false,
       },
       commentCursors: new Map<string, string>(),
@@ -71,7 +70,6 @@ export const createPostStore = (initProps: PostState) => {
           parentCommentId,
           cursor,
           hasMoreReplies,
-          isLoading, // TODO: deprecate this
         }: UpdateCommentArgs) => {
           set((state) => {
             if (!parentCommentId) {
@@ -95,7 +93,11 @@ export const createPostStore = (initProps: PostState) => {
             while (queue.length > 0) {
               const current = queue.shift();
 
-              if (current && 'commentId' in current && current.commentId === parentCommentId) {
+              if (
+                current &&
+                "commentId" in current &&
+                current.commentId === parentCommentId
+              ) {
                 // current.isLoading = isLoading;
                 if (comments) {
                   if (!current.replies) {
@@ -119,7 +121,9 @@ export const createPostStore = (initProps: PostState) => {
             }
 
             if (!foundParent) {
-              console.warn(`Parent comment with ID ${parentCommentId} not found.`);
+              console.warn(
+                `Parent comment with ID ${parentCommentId} not found.`,
+              );
             }
           });
         },
@@ -164,4 +168,3 @@ export const createPostStore = (initProps: PostState) => {
     })),
   );
 };
-
