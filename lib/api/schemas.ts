@@ -47,6 +47,7 @@ export type Comment = z.infer<typeof CommentSchema>;
 // --- Post Schemas ---
 export const CreatePostSchema = z.object({
   content: z.string().min(1),
+  mediaIds: z.array(uuidSchema),
 });
 export type CreatePost = z.infer<typeof CreatePostSchema>;
 
@@ -87,6 +88,7 @@ export const PostSchema = z.object({
   reactions: ReactionStatsSchema,
   reactionCount: z.number().int(),
   commentCount: z.number().int(),
+  mediaUrls: z.array(z.string()).nullable(),
   userReaction: ReactionTypeSchema,
 });
 export type Post = z.infer<typeof PostSchema>;
@@ -124,3 +126,20 @@ export type InfiniteCursorPage<T> = z.infer<
 
 // --- Response Types ---
 export type Unit = void;
+
+// --- Media Schemas ---
+export const MediaUploadResponseSchema = z.object({
+  url: z.string().nullable(),
+  mediumId: uuidSchema,
+});
+export type MediaUploadResponse = z.infer<typeof MediaUploadResponseSchema>;
+
+// --- Search Schemas ---
+export const SearchPostsResponseSchema = InfiniteCursorPageSchema(PostSchema);
+export type SearchPostsResponse = z.infer<typeof SearchPostsResponseSchema>;
+
+// --- Comment Update Schema ---
+export const CommentUpdateSchema = z.object({
+  content: z.string().min(1),
+});
+export type CommentUpdate = z.infer<typeof CommentUpdateSchema>;

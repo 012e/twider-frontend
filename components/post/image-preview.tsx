@@ -15,12 +15,13 @@ type ImagePreview = {
 type ImagePreviewProps = {
   images: ImagePreview[];
   onRemoveImage: (index: number) => void;
+  getImageUploadUrl: () => Promise<string>;
 }
 
 
 export default function ImagesPreview({
   images,
-  onRemoveImage,
+  onRemoveImage: onRemoveImageCallback,
 }: ImagePreviewProps) {
   if (images.length === 0) {
     return null;
@@ -64,10 +65,11 @@ export default function ImagesPreview({
           <ImageUploadComponent
             src={img.url || "/placeholder.svg"}
             onClick={() => handleImageClick(index)}
+            getImageUploadUrl={() => api.media.generateUploadUrl}
             className="object-cover w-full h-full hover:cursor-pointer"
           />
           <button
-            onClick={() => onRemoveImage(index)}
+            onClick={() => onRemoveImageCallback(index)}
             className="absolute top-2 right-2 p-1 rounded-full opacity-0 transition-opacity group-hover:opacity-100 bg-black/50"
             aria-label="Remove image"
           >

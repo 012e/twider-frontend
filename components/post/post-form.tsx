@@ -48,6 +48,7 @@ export default function PostForm() {
     mutationFn: async ({ text }: { text: string }) => {
       const request: CreatePost = {
         content: text,
+        mediaIds: []
       };
       return await posts.create(request);
     },

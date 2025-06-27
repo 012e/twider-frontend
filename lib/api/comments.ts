@@ -3,6 +3,8 @@ import axiosInstance from "../app-axios";
 import {
   CommentContent,
   CommentContentSchema,
+  CommentUpdate,
+  CommentUpdateSchema,
   Comment,
   CommentSchema,
   InfiniteCursorPage,
@@ -10,6 +12,7 @@ import {
   ItemId,
   ItemIdSchema,
   UUID,
+  Unit,
 } from "./schemas";
 
 export const comments = {
@@ -90,5 +93,54 @@ export const comments = {
     );
     
     return PaginatedRepliesSchema.parse(response.data);
+  },
+
+  /**
+   * Update a comment's content
+   * 
+   * PUT /posts/{postId}/comments/{commentId}
+   * 
+   * @param postId ID of the post containing the comment
+   * @param commentId ID of the comment to update
+   * @param content New comment content
+   */
+  update: async (
+    postId: UUID,
+    commentId: UUID,
+    content: CommentUpdate,
+    config?: AxiosRequestConfig,
+  ): Promise<Unit> => {
+    const validatedBody = CommentUpdateSchema.parse(content);
+
+    await axiosInstance.put<Unit>(
+      `/posts/${postId}/comments/${commentId}`,
+      validatedBody,
+      config,
+    );
+    
+    // No data returned for 204 response
+    return;
+  },
+
+  /**
+   * Delete a comment
+   * 
+   * DELETE /posts/{postId}/comments/{commentId}
+   * 
+   * @param postId ID of the post containing the comment
+   * @param commentId ID of the comment to delete
+   */
+  delete: async (
+    postId: UUID,
+    commentId: UUID,
+    config?: AxiosRequestConfig,
+  ): Promise<Unit> => {
+    await axiosInstance.delete<Unit>(
+      `/posts/${postId}/comments/${commentId}`,
+      config,
+    );
+    
+    // No data returned for 204 response
+    return;
   },
 };
