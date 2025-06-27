@@ -1,11 +1,11 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { posts, ProblemDetails } from "@/lib/api"; // Import Post type
+import { posts, ProblemDetails } from "@/lib/api";
 import { AxiosError } from "axios";
-import PostCard from "../components/post/post";
-import InfiniteScrollTrigger from "../components/ui/infinite-scroll-trigger";
-import PostForm from "../components/post/post-form";
+import PostCard from "@/components/post/post";
+import InfiniteScrollTrigger from "@/components/ui/infinite-scroll-trigger";
+import PostForm from "@/components/post/post-form";
 import { Loader } from "lucide-react";
 
 function LoadingState() {
