@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef, type ChangeEvent } from "react";
+import { useState, useRef, type ChangeEvent, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageIcon, Globe, User, SmilePlus } from "lucide-react";
@@ -47,7 +47,7 @@ export default function PostForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<AutosizeTextAreaRef>(null);
 
-  const { mutateAsync } = useMutation({
+  const { mutateAsync, isPending: isUploading } = useMutation({
     mutationFn: async () => {
       await uploadPost();
     },
@@ -95,7 +95,10 @@ export default function PostForm() {
 
   const charsRemaining = MAX_CHARS - content.length;
   const isOverLimit = charsRemaining < 0;
-  const canPost = (content.length > 0 && !isOverLimit) || images.length > 0;
+
+  const canPost = useMemo(() => {
+    return content.length > 0 && !isOverLimit && !isUploading;
+  }, [content, isOverLimit, isUploading]);
 
   return (
     <div className="p-4 rounded-xl border shadow-sm bg-card">
