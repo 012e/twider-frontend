@@ -30,6 +30,7 @@ export type PostState = {
   reactions: api.ReactionStats;
   reactionCount: number;
   commentCount: number;
+  mediaUrls: string[];
   userReaction: api.ReactionType | null;
   commentRoot: CommentRoot;
   commentCursors: Map<string, string>;

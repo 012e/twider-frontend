@@ -15,7 +15,7 @@ export default function PostCard({ post }: PostCardProps) {
     <PostProvider post={post} key={post.postId}>
       <div className="flex flex-col rounded-2xl border shadow-sm bg-card text-card-foreground">
         <PostHeader />
-        <PostContent content={post.content ?? ""} />
+        <PostContent />
         <PostInfo />
         <Separator />
         <PostActions />

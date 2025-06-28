@@ -78,15 +78,12 @@ export default function ImageUploadComponent({
   });
 
   useEffect(() => {
-    if (
-      uploadMutation.isPending ||
-      uploadMutation.isSuccess ||
-      uploadMutation.isError
-    ) {
+    if (!uploadMutation.isIdle) {
       return;
     }
     uploadMutation.mutate(medium.file);
-  }, [uploadMutation.isPending]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [medium.file, uploadMutation.mutate]);
 
   const currentImageSrc = medium.previewUrl;
   const isUploading = uploadMutation.isPending;
@@ -98,7 +95,7 @@ export default function ImageUploadComponent({
           <img
             src={currentImageSrc || "/placeholder.svg"}
             alt="Upload preview"
-            className="object-cover w-full h-64 rounded-lg border-2 border-gray-300 border-dashed"
+            className="object-cover w-full h-64 rounded-lg"
             {...props}
           />
 
