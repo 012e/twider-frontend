@@ -37,9 +37,11 @@ function ErrorState({ error }: ErrorStateProps) {
 }
 
 function PostFormWrapper() {
-  return <PostFormProvider initialContent="">
-    <PostForm />
-  </PostFormProvider>
+  return (
+    <PostFormProvider initialContent="">
+      <PostForm />
+    </PostFormProvider>
+  );
 }
 
 export default function HomePage() {
@@ -53,7 +55,7 @@ export default function HomePage() {
     status,
   } = useInfiniteQuery({
     queryKey: ["posts"],
-    queryFn: ({ pageParam }: { pageParam: any }) => {
+    queryFn: ({ pageParam }: { pageParam: string | undefined }) => {
       return posts.getList({ cursor: pageParam });
     },
     initialPageParam: undefined,
@@ -78,7 +80,7 @@ export default function HomePage() {
     <div className="p-4 mx-auto space-y-6 max-w-2xl">
       <main>
         <PostFormWrapper />
-        <h1 className="text-3xl font-bold tracking-tight text-center m-5">
+        <h1 className="m-5 text-3xl font-bold tracking-tight text-center">
           Latest Posts
         </h1>
 

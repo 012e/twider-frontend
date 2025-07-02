@@ -8,6 +8,7 @@ import NavBar from "../_components/nav-bar";
 import { useDimensions } from "@/components/hooks/use-dimension";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const queryClient = new QueryClient();
 
@@ -26,17 +27,22 @@ export default function ClientProviders({
       enableSystem
       disableTransitionOnChange
     >
-      <SessionProvider>
-        <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false} />
-          <div className="flex w-screen h-screen">
-            <NavBar ref={navRef} />
-            <main style={{ marginLeft: navWidth || 96.75 }} className="w-full h-full">
-              {children}
-            </main>
-          </div>
-        </QueryClientProvider>
-      </SessionProvider>
+      <NuqsAdapter>
+        <SessionProvider>
+          <QueryClientProvider client={queryClient}>
+            <ReactQueryDevtools initialIsOpen={false} />
+            <div className="flex w-screen h-screen">
+              <NavBar ref={navRef} />
+              <main
+                style={{ marginLeft: navWidth || 96.75 }}
+                className="w-full h-full"
+              >
+                {children}
+              </main>
+            </div>
+          </QueryClientProvider>
+        </SessionProvider>
+      </NuqsAdapter>
       <Toaster />
     </ThemeProvider>
   );

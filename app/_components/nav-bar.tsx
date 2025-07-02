@@ -17,15 +17,14 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { signIn } from "next-auth/react";
 
 export default function NavBar({ ref }: { ref: Ref<HTMLDivElement> }) {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Had to use !size-8 because https://github.com/shadcn-ui/ui/issues/6316
   const navItems = [
-    { icon: <Home className="!size-8" />, label: "Home", href: "#" },
-    { icon: <Search className="!size-8" />, label: "Search", href: "#" },
+    { icon: <Home className="!size-8" />, label: "Home", href: "/" },
+    { icon: <Search className="!size-8" />, label: "Search", href: "/search" },
     { icon: <Compass className="!size-8" />, label: "Explore", href: "#" },
     { icon: <Film className="!size-8" />, label: "Reels", href: "#" },
     { icon: <PlusSquare className="!size-8" />, label: "Create", href: "#" },

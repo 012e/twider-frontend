@@ -19,7 +19,7 @@ export const search = {
   ): Promise<SearchPostsResponse> => {
     const response = await axiosInstance.get<SearchPostsResponse>(
       '/search/posts',
-      { params: { query, cursor, pageSize }, ...config },
+      { params: { q: query, cursor, pageSize }, ...config },
     );
     
     return SearchPostsResponseSchema.parse(response.data);
