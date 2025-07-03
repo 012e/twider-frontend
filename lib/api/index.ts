@@ -16,3 +16,4 @@ export { posts } from './posts';
 export { users } from './users';
 export { media } from './media';
 export { search } from './search';
+export { chat } from './chat';

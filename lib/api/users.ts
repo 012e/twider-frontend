@@ -1,8 +1,6 @@
 import { AxiosRequestConfig } from "axios";
 import axiosInstance from "../app-axios";
 import { 
-  UserResponse, 
-  UserResponseSchema, 
   User, 
   UserSchema, 
   Post,
@@ -21,15 +19,15 @@ export const users = {
    * @param id User ID
    */
   getById: async (
-    id: number,
+    id: UUID,
     config?: AxiosRequestConfig,
-  ): Promise<UserResponse> => {
-    const response = await axiosInstance.get<UserResponse>(
+  ): Promise<User> => {
+    const response = await axiosInstance.get<User>(
       `/users/${id}`,
       config,
     );
     
-    return UserResponseSchema.parse(response.data);
+    return UserSchema.parse(response.data);
   },
 
   /**

@@ -13,7 +13,11 @@ apiClient.interceptors.request.use((config: any) => {
 });
 
 apiClient.interceptors.request.use(async (config: any) => {
-  // FUCK types
+  if (!!config.headers.Authorization) {
+    return config;
+  }
+
+  // FUCK nextjs
   const session = await getSession() as any;
   if (session) {
     config.headers.Authorization = `Bearer ${session.token}`;

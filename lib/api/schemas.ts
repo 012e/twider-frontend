@@ -143,3 +143,43 @@ export const CommentUpdateSchema = z.object({
   content: z.string().min(1),
 });
 export type CommentUpdate = z.infer<typeof CommentUpdateSchema>;
+
+// --- Chat Schemas ---
+export const ChatParticipantSchema = z.object({
+  userId: uuidSchema,
+  username: z.string().nullable(),
+  profilePicture: z.string().nullable(),
+  joinedAt: dateTimeSchema,
+  role: z.string().nullable(),
+  lastReadMessageId: uuidSchema.nullable(),
+});
+export type ChatParticipant = z.infer<typeof ChatParticipantSchema>;
+
+export const MessageSchema = z.object({
+  messageId: uuidSchema,
+  chatId: uuidSchema,
+  userId: uuidSchema.nullable(),
+  username: z.string().nullable(),
+  profilePicture: z.string().nullable(),
+  content: z.string().nullable(),
+  sentAt: dateTimeSchema,
+  isDeleted: z.boolean(),
+});
+export type Message = z.infer<typeof MessageSchema>;
+
+export const ChatSchema = z.object({
+  chatId: uuidSchema,
+  chatName: z.string().nullable(),
+  chatType: z.string().nullable(),
+  createdAt: dateTimeSchema,
+  updatedAt: dateTimeSchema,
+  messageCount: z.number().int(),
+  participants: z.array(ChatParticipantSchema).nullable(),
+  lastMessage: MessageSchema,
+});
+export type Chat = z.infer<typeof ChatSchema>;
+
+export const SendMessageRequestSchema = z.object({
+  content: z.string().min(1).max(2000),
+});
+export type SendMessageRequest = z.infer<typeof SendMessageRequestSchema>;
