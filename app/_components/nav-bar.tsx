@@ -33,7 +33,7 @@ export default function NavBar({ ref }: { ref: Ref<HTMLDivElement> }) {
       label: "Notifications",
       href: "#",
     },
-    { icon: <User className="!size-8" />, label: "Profile", href: "#" },
+    { icon: <User className="!size-8" />, label: "Profile", href: "/me" },
   ];
 
   if (isMobile) {
