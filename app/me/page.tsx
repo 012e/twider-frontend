@@ -8,14 +8,15 @@ import PostCard from "@/components/post/post";
 import InfiniteScrollTrigger from "@/components/ui/infinite-scroll-trigger";
 import { Loader, CalendarDays, CheckCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
+import { getSession } from "next-auth/react";
+import SignOutButton from "./_components/sign-out-button";
 
 function LoadingState() {
   return (
     <div className="flex justify-center items-center h-screen">
-      <Loader className="size-10 animate-spin text-primary" />
+      <Loader className="animate-spin size-10 text-primary" />
     </div>
   );
 }
@@ -33,7 +34,7 @@ function ErrorState({ error, context }: ErrorStateProps) {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="p-8 text-center bg-destructive/10 text-destructive rounded-lg">
+      <div className="p-8 text-center rounded-lg bg-destructive/10 text-destructive">
         <h2 className="text-lg font-semibold">Error Loading {context}</h2>
         <p>{errorMessage}</p>
       </div>
@@ -51,52 +52,60 @@ function UserProfileHeader({ user, postCount }: UserProfileHeaderProps) {
     ? format(new Date(user.createdAt), "MMMM yyyy")
     : "N/A";
 
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: () => getSession(),
+  });
+  console.log("Session data:", session);
+
   // Mock data for demonstration
-  const followerCount = 1234;
-  const followingCount = 567;
+  const followerCount = 0;
+  const followingCount = 0;
 
   return (
     <div className="border-b bg-card">
-      <div className="h-48 bg-muted">
-        {/* Placeholder for cover image */}
-      </div>
-      <div className="p-4 sm:p-6 -mt-20">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between">
-          <Avatar className="size-36 border-4 border-background">
+      <div className="h-48 bg-muted">{/* Placeholder for cover image */}</div>
+      <div className="p-4 -mt-20 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end">
+          <Avatar className="border-4 size-36 border-background">
             <AvatarImage src={user.profilePicture ?? undefined} />
             <AvatarFallback className="text-4xl">
               {user.username?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="mt-4 sm:mt-0">
-            <Button variant="outline">Edit profile</Button>
+            {session && <SignOutButton refreshToken={(session as any).refresh_token} />}
           </div>
         </div>
         <div className="mt-4">
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2 items-center">
             <h1 className="text-2xl font-bold">{user.username}</h1>
             {user.verificationStatus === "VERIFIED" && (
-              <CheckCircle className="size-5 text-primary fill-current" />
+              <CheckCircle className="fill-current size-5 text-primary" />
             )}
           </div>
           <p className="text-muted-foreground">@{user.username}</p>
         </div>
         <p className="mt-4 text-foreground/90">{user.bio}</p>
-        <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
+        <div className="flex gap-4 items-center mt-4 text-sm text-muted-foreground">
           <CalendarDays className="size-4" />
           <span>Joined {joinDate}</span>
         </div>
-        <div className="flex items-center gap-6 mt-4">
-          <div className="flex items-center gap-1">
+        <div className="flex gap-6 items-center mt-4">
+          <div className="flex gap-1 items-center">
             <span className="font-bold text-foreground">{postCount}</span>
             <span className="text-muted-foreground">Posts</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="font-bold text-foreground">{followerCount.toLocaleString()}</span>
+          <div className="flex gap-1 items-center">
+            <span className="font-bold text-foreground">
+              {followerCount.toLocaleString()}
+            </span>
             <span className="text-muted-foreground">Followers</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="font-bold text-foreground">{followingCount.toLocaleString()}</span>
+          <div className="flex gap-1 items-center">
+            <span className="font-bold text-foreground">
+              {followingCount.toLocaleString()}
+            </span>
             <span className="text-muted-foreground">Following</span>
           </div>
         </div>
@@ -154,11 +163,19 @@ export default function Page() {
     <div className="container mx-auto w-1/2">
       <UserProfileHeader user={user} postCount={allPosts.length} />
       <Tabs defaultValue="posts" className="w-full">
-        <TabsList className="w-full justify-around rounded-none border-b">
-          <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
-          <TabsTrigger value="replies" className="flex-1" disabled>Replies</TabsTrigger>
-          <TabsTrigger value="media" className="flex-1" disabled>Media</TabsTrigger>
-          <TabsTrigger value="likes" className="flex-1" disabled>Likes</TabsTrigger>
+        <TabsList className="justify-around w-full rounded-none border-b">
+          <TabsTrigger value="posts" className="flex-1">
+            Posts
+          </TabsTrigger>
+          <TabsTrigger value="replies" className="flex-1" disabled>
+            Replies
+          </TabsTrigger>
+          <TabsTrigger value="media" className="flex-1" disabled>
+            Media
+          </TabsTrigger>
+          <TabsTrigger value="likes" className="flex-1" disabled>
+            Likes
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="posts">
           {loadPostsError && (
@@ -172,7 +189,7 @@ export default function Page() {
               (post) => !!post && <PostCard key={post.postId} post={post} />,
             )}
           </div>
-          
+
           {(allPosts.length > 0 || hasNextPage) && (
             <InfiniteScrollTrigger
               hasNextPage={hasNextPage}
@@ -183,9 +200,9 @@ export default function Page() {
           )}
 
           {!isLoadingPosts && !loadPostsError && allPosts.length === 0 && (
-            <div className="text-center p-10 text-muted-foreground">
-                <h3 className="text-xl font-semibold">No posts yet</h3>
-                <p>When this user posts, their posts will appear here.</p>
+            <div className="p-10 text-center text-muted-foreground">
+              <h3 className="text-xl font-semibold">No posts yet</h3>
+              <p>When this user posts, their posts will appear here.</p>
             </div>
           )}
         </TabsContent>

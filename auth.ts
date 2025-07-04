@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import Keycloak from "next-auth/providers/keycloak";
+import { JWT } from "next-auth/jwt";
+import axios, { AxiosError } from "axios";
 
 const AUTH_KEYCLOAK_ISSUER = process.env.AUTH_KEYCLOAK_ISSUER;
 const AUTH_KEYCLOAK_ID = process.env.AUTH_KEYCLOAK_ID;
@@ -20,11 +22,11 @@ export type KeycloakJwt = {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Keycloak],
-
   callbacks: {
     async jwt({ token: rawToken, account }) {
       const token = rawToken as KeycloakJwt;
       if (account) {
+        console.log(account)
         // First-time login, save the `access_token`, its expiry and the `refresh_token`
         return {
           ...token,
@@ -82,6 +84,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         ...session,
         error: token.error,
         token: token.access_token,
+        refresh_token: token.refresh_token,
       };
       return res;
     },
