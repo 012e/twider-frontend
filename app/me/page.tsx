@@ -56,7 +56,6 @@ function UserProfileHeader({ user, postCount }: UserProfileHeaderProps) {
     queryKey: ["session"],
     queryFn: () => getSession(),
   });
-  console.log("Session data:", session);
 
   // Mock data for demonstration
   const followerCount = 0;

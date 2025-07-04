@@ -47,9 +47,7 @@ export function useComments() {
 
   const loadMoreComments = useCallback(
     async (commentId: string | undefined) => {
-      console.log("Loading more comments for commentId:", commentId ?? "root");
       const cursor = commentCursors.get(commentId ?? "root");
-      console.log("Cursor for commentId:", cursor);
 
       const result = await api.comments.getReplies(postId, commentId, {
         cursor: cursor,

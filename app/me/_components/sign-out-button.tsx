@@ -8,7 +8,6 @@ export default function SignOut({ refreshToken }: { refreshToken: string }) {
           refresh_token: token,
         },
       });
-      console.log(response)
     } catch (error) {
       console.error("Error during sign out:", error);
     }

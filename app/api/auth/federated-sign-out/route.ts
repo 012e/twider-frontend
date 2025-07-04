@@ -27,8 +27,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
       },
     );
 
-    console.log(endSession);
-    console.log(await endSession.json());
     if (endSession && endSession.status && endSession.status >= 300) {
       console.warn("END_SESSION ERROR", endSession.status);
       throw Error;
